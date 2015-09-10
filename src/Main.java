@@ -10,13 +10,12 @@ import roulette.Game;
 public class Main {
     public static void main (String[] args) {
         Game game = new Game();
-        Gambler player = new Gambler("Robert", 1000);
+        Gambler player = new Gambler("Kelleric", 1000);
 
         System.out.println(String.format("Hello %s, let's play %s!\n", player.getName(), game.getName()));
         while (player.isSolvent()) {
             game.play(player);
         }
-        System.out.println();
-        System.out.println(String.format("\nGoodbye %s, thanks for playing!", player.getName()));
+        System.out.println(String.format("\n\nGoodbye %s, thanks for playing!", player.getName()));
     }
 }
