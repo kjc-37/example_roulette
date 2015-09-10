@@ -1,6 +1,6 @@
 # example_roulette
 Program to refactor that plays a game of roulette
-kjc37 and elj16
+Kelly Cochran (kjc37) and Eric Jiang (elj16)
 
 Refactoring questions
 1. We added the abstract methods betIsMade() and setAndPlaceBet().
