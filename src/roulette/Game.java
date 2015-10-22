@@ -1,6 +1,9 @@
 package roulette;
 
-import Bets.*;
+import roulette.bets.BetFactory;
+import roulette.bets.OddEven;
+import roulette.bets.RedBlack;
+import roulette.bets.ThreeConsecutive;
 import util.ConsoleReader;
 
 
@@ -12,12 +15,6 @@ import util.ConsoleReader;
 public class Game {
     // name of the game
     private static final String DEFAULT_NAME = "Roulette";
-    // bets player can make
-    private Bet[] myPossibleBets = { 
-        new ColorBet("Red or Black", 1),
-        new EvenOddBet("Odd or Even", 1),
-        new NumberBet("Three in a Row", 11)
-    };
     private Wheel myWheel;
 
     /**
@@ -43,16 +40,17 @@ public class Game {
      * @param player one that wants to play a round of the game
      */
     public void play (Gambler player) {
-        int amount = ConsoleReader.promptRange("How much do you want to bet", 0, player.getBankroll());
-        Bet currentBet = promptForBet();
-        currentBet.setAndPlaceBet();
+        int amount = ConsoleReader.promptRange("How much do you want to bet",
+                                               0, player.getBankroll());
+        Bet b = promptForBet();
+        b.place();
 
-        System.out.print("Spinning ... ");
-        myWheel.spin();
-        System.out.println(String.format("Dropped into %s %d", myWheel.getColor(), myWheel.getNumber()));
-        if (currentBet.betIsMade(myWheel)) {
+        System.out.print("Spinning ...");
+        Wheel.SpinResult spinResult = myWheel.spin();
+        System.out.println(String.format("Dropped into %s", spinResult));
+        if (b.isMade(spinResult)) {
             System.out.println("*** Congratulations :) You win ***");
-            amount *= currentBet.getOdds();
+            amount = b.payout(amount);
         }
         else {
             System.out.println("*** Sorry :( You lose ***");
@@ -64,11 +62,16 @@ public class Game {
     /**
      * Prompt the user to make a bet from a menu of choices.
      */
-    private Bet promptForBet () {
-        System.out.println("You can make one of the following types of bets:");
-        for (int k = 0; k < myPossibleBets.length; k++) {
-            System.out.println(String.format("%d) %s", (k + 1), myPossibleBets[k].getDescription()));
+    private Bet promptForBet(){
+        
+        BetFactory factory = new BetFactory();
+        factory.printChoices();
+        int response = ConsoleReader.promptRange("Please make a choice", 1, factory.numPossibleBets());
+        //return myPossibleBets[response - 1];
+        try {
+        	return factory.makeBet(response);
+        } catch (Exception e) {
+        	return new RedBlack();
         }
-        return myPossibleBets[ConsoleReader.promptRange("Please make a choice", 1, myPossibleBets.length) - 1];
     }
 }
